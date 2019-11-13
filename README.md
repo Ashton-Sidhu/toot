@@ -27,3 +27,4 @@ I'll update this repo periodically and will add the following features:
 
 - [ ] Topic Filtering
 - [ ] Add account of tweet that is favourited
+- [ ] Image on Dockerhub

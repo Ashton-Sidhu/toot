@@ -13,7 +13,9 @@ You will need a Twitter API consumer key as well as Twitter App access token. Yo
 
 You can start it as a docker instance by running the following.
 
-`docker run -d -p 8501:8501 -e CONSUMER_KEY="your_twitter_consumer_key" -e CONSUMER_SECRET="your_twitter_consumer_secret" -e ACCESS_TOKEN="your_twitter_access_token" -e ACCESS_TOKEN_SECRET="your_access_token_secret" asidhu/twitter-filt` and then going to http://localhost:8501.
+`docker build -t twitter-filt .`
+
+`docker run -d -p 8501:8501 -e CONSUMER_KEY="your_twitter_consumer_key" -e CONSUMER_SECRET="your_twitter_consumer_secret" -e ACCESS_TOKEN="your_twitter_access_token" -e ACCESS_TOKEN_SECRET="your_access_token_secret" twitter-filt` and then going to http://localhost:8501.
 
 or by adding your keys in the source code or as environment variables and running:
 

@@ -27,6 +27,7 @@ Coming Soon
 ---
 I'll update this repo periodically and will add the following features:
 
+- [ ] Reduced loading time
 - [ ] Topic Filtering
 - [ ] Add account of tweet that is favourited
 - [ ] Image on Dockerhub

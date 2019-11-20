@@ -21,7 +21,7 @@ You can start it as a docker instance by running the following.
 
 or by adding your keys in the source code or as environment variables and running:
 
-`streamlit run twitter-filt/twit-filt.py`
+`streamlit run twitter-filt/twit-filt.py` or background the process so it will continue running `nohup streamlit run twitter-filt/twit-filt.py &` or a schtask on Windows.
 
 Coming Soon
 ---

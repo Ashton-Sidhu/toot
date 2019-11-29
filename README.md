@@ -11,23 +11,27 @@ The search also supports regex!
 Usage
 ---
 
-You will need a Twitter API consumer key as well as Twitter App access token. You can get all of those here: https://developer.twitter.com/en/apply-for-access.html 
+You will need a Twitter API consumer key as well as Twitter App access token. You can get all of those here: https://developer.twitter.com/en/apply-for-access.html
+
+To edit the number of times between api requests to twitter, change the `REQUEST_TIME_LIMIT` variable (default is 20min).
 
 You can start it as a docker instance by running the following.
 
 `docker build -t twitter-filt .`
 
-`docker run -d -p 8501:8501 -e CONSUMER_KEY="your_twitter_consumer_key" -e CONSUMER_SECRET="your_twitter_consumer_secret" -e ACCESS_TOKEN="your_twitter_access_token" -e ACCESS_TOKEN_SECRET="your_access_token_secret" twitter-filt` and then going to http://localhost:8501.
+`docker run -d -p 8501:8501 -e CONSUMER_KEY="your_twitter_consumer_key" -e CONSUMER_SECRET="your_twitter_consumer_secret" -e ACCESS_TOKEN="your_twitter_access_token" -e ACCESS_TOKEN_SECRET="your_access_token_secret" -e REQUEST_TIME_LIMIT="30" twitter-filt`
 
 or by adding your keys in the source code or as environment variables and running:
 
 `streamlit run twitter-filt/twit-filt.py` or background the process so it will continue running `nohup streamlit run twitter-filt/twit-filt.py &` or a schtask on Windows.
 
+Then access it by going to http://localhost:8501.
+
 Coming Soon
 ---
 I'll update this repo periodically and will add the following features:
 
-- [ ] Reduced loading time
+- [x] Reduced loading time
 - [ ] Topic Filtering
 - [ ] Add account of tweet that is favourited
 - [ ] Image on Dockerhub

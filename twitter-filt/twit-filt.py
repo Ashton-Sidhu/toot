@@ -10,7 +10,7 @@ CONSUMER_KEY = os.environ.get('CONSUMER_KEY', None)
 CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET', None)
 ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN', None)
 ACCESS_TOKEN_SECRET = os.environ.get('ACCESS_TOKEN_SECRET', None)
-REQUEST_TIME_LIMIT = os.environ.get('REQUEST_TIME_LIMIT', 20) # in minutes
+REQUEST_TIME_LIMIT = int(os.environ.get('REQUEST_TIME_LIMIT', 20)) # in minutes
 
 if not CONSUMER_KEY and not CONSUMER_SECRET and not ACCESS_TOKEN and not ACCESS_TOKEN_SECRET:
     raise ValueError('Consumer and Access keys and secrets must be set as environment variables.')

@@ -35,5 +35,5 @@ I'll update this repo periodically and will add the following features:
 
 - [x] Reduced loading time
 - [ ] Topic Filtering
-- [ ] Add account of tweet that is favourited
+- [x] Add account of tweet that is favourited
 - [ ] Image on Dockerhub

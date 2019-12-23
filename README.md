@@ -1,4 +1,4 @@
-Twitter-Filter
+Toot
 ---
 If you're like me and use Twitter to keep up with researchers, blog posts and members of the Data Science & ML community in general, you might find yourself liking tweets to read later or for when you need a post when you're working on a relevant problem.
 

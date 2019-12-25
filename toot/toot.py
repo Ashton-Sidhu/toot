@@ -13,11 +13,19 @@ import tweepy
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 
+##################################################################
+######################## PARAMETERS ##############################
+##################################################################
+
 CONSUMER_KEY = os.environ.get('CONSUMER_KEY', None)
 CONSUMER_SECRET = os.environ.get('CONSUMER_SECRET', None)
 ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN', None)
 ACCESS_TOKEN_SECRET = os.environ.get('ACCESS_TOKEN_SECRET', None)
 REQUEST_TIME_LIMIT = int(os.environ.get('REQUEST_TIME_LIMIT', 60)) # in minutes
+
+##################################################################
+##################################################################
+##################################################################
 
 if not CONSUMER_KEY and not CONSUMER_SECRET and not ACCESS_TOKEN and not ACCESS_TOKEN_SECRET:
     raise ValueError('Consumer and Access keys and secrets must be set as environment variables.')
@@ -38,10 +46,16 @@ stopwords.extend(Path('stopwords.txt').read_text().split('\n'))
 
 @st.cache(show_spinner=True)
 def load_tweets(time):
+    """
+    Load tweets from twitter using Tweepy API.
+    """
 
     return list(tweepy.Cursor(API.favorites, tweet_mode='extended').items())
 
 def filter_tweets(df: pd.DataFrame, word: str):
+    """
+    Filter tweets based on search term provided in search bar.
+    """
 
     tweets = df['Favorited Tweets']
 
@@ -57,6 +71,9 @@ def filter_tweets(df: pd.DataFrame, word: str):
     return df[tweet_filter_list].reset_index()
 
 def highlight_urls(data):
+    """
+    Add html tags to highlight urls making them clickable in streamlit table.
+    """
 
     r = re.compile('https?:\/\/[A-Za-z0-9]*\.[a-z]*\/[A-Za-z0-9]*')
 
@@ -74,12 +91,18 @@ def highlight_urls(data):
     return pd.Series(transformed_text)
 
 def insert_newlines(data):
+    """
+    Render new lines in the table by replacing '\n' with <br>.
+    """
 
     transformed_text = [text.replace('\n', '<br>') for text in data]
 
     return pd.Series(transformed_text)
 
 def write_current_date(cur_time=None):
+    """
+    Writes the current date & time to the lock file.
+    """
 
     if not cur_time:
         time = datetime.datetime.now()
@@ -91,7 +114,10 @@ def write_current_date(cur_time=None):
 
     return time
 
-def generate_keywords(data):
+def generate_tags(data):
+    """
+    Generates the tags based on the tweets and then assigns topics to each tweet.
+    """
 
     all_keywords = []
 
@@ -120,6 +146,9 @@ def generate_keywords(data):
     return all_keywords
 
 def get_topic_per_docs(data, corpus, ldamodel):
+    """
+    Assign topics to each tweet.
+    """
 
     keywords = []
 
@@ -139,6 +168,9 @@ def get_topic_per_docs(data, corpus, ldamodel):
     return keywords
 
 def get_top_words(keywords):
+    """
+    Orders the topics from most common to least common for displaying.
+    """
 
     keywords = itertools.chain.from_iterable(map(str.split, keywords))
     top_words = list(Counter(keywords))
@@ -146,6 +178,9 @@ def get_top_words(keywords):
     return top_words
 
 def filter_tags(df: pd.DataFrame, options: list):
+    """
+    Filters tweets based on the tag(s) selected.
+    """
 
     tweet_filter_list = []
 
@@ -194,11 +229,13 @@ def main():
     search = st.text_input('Search:')
 
     if st.button('Generate Tags'):
-        tags = generate_keywords(full_text)
+        tags = generate_tags(full_text)
 
         with open(tags_lock, 'wb') as f:
             pickle.dump(tags, f)
 
+    # If the tag lock exists, the tags have already been created
+    # Retrieve the tags
     if os.path.exists(tags_lock):
 
         with open(tags_lock, 'rb') as f:
@@ -211,6 +248,8 @@ def main():
         options=top_words
         )
 
+    # If the user has generated tags, add a hidden column of those tags
+    # Otherwise just use the Favorite Tweet column
     if tags:
         df = pd.DataFrame({'Favorited Tweets': all_favorites, 'keywords': tags})
     else:

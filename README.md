@@ -4,7 +4,7 @@ If you're like me and use Twitter to keep up with researchers, blog posts and me
 
 Well then you'll also know, the number of likes start to grow quickly and searching/filtering through all the likes to find the relevant likes you need, when you need them, is a pain. Hence, the use case for this quick app. Due to the simplicity of this app, I decided to build it with quickly with Streamlit.
 
-![image](https://user-images.githubusercontent.com/9558507/68728805-50f9c180-0596-11ea-9e1c-19df8aabf4a4.png)
+![image]()
 
 Features
 --------
@@ -21,12 +21,18 @@ You will need a Twitter API consumer key as well as Twitter App access token. Yo
 
 To edit the number of times between api requests to twitter, change the `REQUEST_TIME_LIMIT` variable (default is 60min).
 
+### DockerHub
+
+You can pull a stock image from Docker Hub by running the following:
+
+`docker pull bigsidhu/toot`
+
 ### Docker
-You can start it as a docker instance by running the following.
+You can start it as a docker instance by running the following:
 
 `docker build -t toot .`
 
-`docker run -d -p 8501:8501 -e CONSUMER_KEY=`your_twitter_consumer_key` -e CONSUMER_SECRET=`your_twitter_consumer_secret` -e ACCESS_TOKEN=`your_twitter_access_token` -e ACCESS_TOKEN_SECRET=`your_access_token_secret` -e REQUEST_TIME_LIMIT="30" toot`
+`docker run -d --name `container_name` -p 8501:8501 -e CONSUMER_KEY=`your_twitter_consumer_key` -e CONSUMER_SECRET=`your_twitter_consumer_secret` -e ACCESS_TOKEN=`your_twitter_access_token` -e ACCESS_TOKEN_SECRET=`your_access_token_secret` -e REQUEST_TIME_LIMIT="30" toot`
 
 ### Locally
 Add your twitter api keys in the source code or as environment variables and running:

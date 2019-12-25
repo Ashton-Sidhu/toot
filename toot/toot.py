@@ -42,7 +42,7 @@ if not os.path.exists(path):
 requst_lock = os.path.join(path, 'request.lock')
 tags_lock = os.path.join(path, 'tags.lock')
 stopwords = stopwords.words('english')
-stopwords.extend(Path('stopwords.txt').read_text().split('\n'))
+stopwords.extend(Path('toot/stopwords.txt').read_text().split('\n'))
 
 @st.cache(show_spinner=True)
 def load_tweets(time):
@@ -195,6 +195,17 @@ def filter_tags(df: pd.DataFrame, options: list):
 
     return df[tweet_filter_list]
 
+def save_tags(full_text):
+    """
+    Saves the tags to a lock file as a caching mechanism.
+    """
+        
+    tags = generate_tags(full_text)
+
+    with open(tags_lock, 'wb') as f:
+        pickle.dump(tags, f)
+
+    return tags
 
 def main():
 
@@ -229,24 +240,25 @@ def main():
     search = st.text_input('Search:')
 
     if st.button('Generate Tags'):
-        tags = generate_tags(full_text)
-
-        with open(tags_lock, 'wb') as f:
-            pickle.dump(tags, f)
+        save_tags(full_text)
 
     # If the tag lock exists, the tags have already been created
+    # If any new  tweets have been favorited, regen the tags
     # Retrieve the tags
     if os.path.exists(tags_lock):
 
         with open(tags_lock, 'rb') as f:
             tags = pickle.load(f)
 
+        if len(tags) != len(full_text):
+            tags = save_tags(full_text)
+
         top_words = get_top_words(tags)
 
-    options = st.multiselect(
-        'Search based on keywords: ',
-        options=top_words
-        )
+        options = st.multiselect(
+            'Search based on keywords: ',
+            options=top_words
+            )
 
     # If the user has generated tags, add a hidden column of those tags
     # Otherwise just use the Favorite Tweet column

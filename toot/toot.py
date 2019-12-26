@@ -193,7 +193,7 @@ def filter_tags(df: pd.DataFrame, options: list):
         else:
             tweet_filter_list.append(False)
 
-    return df[tweet_filter_list]
+    return df[tweet_filter_list].reset_index()
 
 def save_tags(full_text):
     """

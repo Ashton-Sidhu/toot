@@ -4,7 +4,8 @@ RUN mkdir src/
 COPY . src/
 WORKDIR src/
 RUN pip3 install -r requirements.txt
+RUN python3 -c "import nltk; nltk.download('stopwords')"
 
 EXPOSE 8501
 
-CMD streamlit run twitter-filt/twit-filt.py
+CMD streamlit run toot/toot.py

@@ -50,4 +50,4 @@ I'll update this repo periodically and will add the following features:
 - [x] Reduced loading time
 - [x] Topic Filtering
 - [x] Add account of tweet that is favourited
-- [ ] Image on Dockerhub
+- [x] Image on Dockerhub

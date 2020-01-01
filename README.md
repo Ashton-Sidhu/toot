@@ -39,7 +39,12 @@ You can start it as a docker instance by running the following:
 ### Locally
 Add your twitter api keys in the source code or as environment variables and running:
 
-`streamlit run toot/toot.py` or background the process so it will continue running `nohup streamlit run toot/toot.py &` or a schtask on Windows.
+```bash
+pip install -r requirements.txt
+streamlit run toot/toot.py
+```
+
+To background the process `nohup streamlit run toot/toot.py &` or a schtask on Windows.
 
 Then access it by going to http://localhost:8501.
 

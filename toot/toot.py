@@ -24,6 +24,8 @@ ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN", None)
 ACCESS_TOKEN_SECRET = os.environ.get("ACCESS_TOKEN_SECRET", None)
 REQUEST_TIME_LIMIT = int(os.environ.get("REQUEST_TIME_LIMIT", 60))  # in minutes
 
+__version__ = "1.0.0"
+
 ##################################################################
 ##################################################################
 ##################################################################
@@ -244,15 +246,12 @@ def main():
     cursor = get_cursor()
     data = load_tweets(cursor, time_float)
 
-    st.write(data[0].id)
-    st.write("https://twitter.com/twitter/statuses/")
-
     all_favorites = [
         f"<strong><em>@{fav.user.name}</strong></em> - {fav.full_text} <br><br> https://twitter.com/twitter/statuses/{fav.id}" for fav in data
     ]
     full_text = [fav.full_text for fav in data]
 
-    st.title("My Likes")
+    st.title(f"My Likes - v{__version__}")
 
     search = st.text_input("Search:")
 

@@ -17,38 +17,9 @@ Features
 Usage
 ---
 
-You will need a Twitter API consumer key as well as Twitter App access token. You can get all of those here: https://developer.twitter.com/en/apply-for-access.html
+You will need an ElasticSearch instance with all your twitter data.
 
 To edit the number of times between api requests to twitter, change the `REQUEST_TIME_LIMIT` variable (default is 60min).
-
-### DockerHub
-
-You can pull a stock image from Docker Hub by running the following:
-
-`docker pull bigsidhu/toot`
-
-```bash
-docker run -d --name `container_name` -p 8501:8501 \
--e CONSUMER_KEY=`your_twitter_consumer_key` \
--e CONSUMER_SECRET=`your_twitter_consumer_secret` \
--e ACCESS_TOKEN=`your_twitter_access_token` \
--e ACCESS_TOKEN_SECRET=`your_access_token_secret` \
--e REQUEST_TIME_LIMIT="30" bigsidhu/toot
-```
-
-### Docker
-You can start it as a docker instance by running the following:
-
-`docker build -t toot .`
-
-```bash
-docker run -d --name `container_name` -p 8501:8501 \
--e CONSUMER_KEY=`your_twitter_consumer_key` \
--e CONSUMER_SECRET=`your_twitter_consumer_secret` \
--e ACCESS_TOKEN=`your_twitter_access_token` \
--e ACCESS_TOKEN_SECRET=`your_access_token_secret` \
--e REQUEST_TIME_LIMIT="30" toot
-```
 
 ### Locally
 Add your twitter api keys in the source code or as environment variables and running:

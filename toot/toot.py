@@ -3,71 +3,45 @@ import os
 import pickle
 import re
 
-from datetime import datetime
 from collections import Counter
 from pathlib import Path
 
 import gensim
 import pandas as pd
 import streamlit as st
-import tweepy
 from nltk.corpus import stopwords
+from pandasticsearch import DataFrame
 from sklearn.feature_extraction.text import CountVectorizer
 
 ##################################################################
 ######################## PARAMETERS ##############################
 ##################################################################
 
-CONSUMER_KEY = os.environ.get("CONSUMER_KEY", None)
-CONSUMER_SECRET = os.environ.get("CONSUMER_SECRET", None)
-ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN", None)
-ACCESS_TOKEN_SECRET = os.environ.get("ACCESS_TOKEN_SECRET", None)
-REQUEST_TIME_LIMIT = int(os.environ.get("REQUEST_TIME_LIMIT", 60))  # in minutes
-
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 ##################################################################
 ##################################################################
 ##################################################################
-
-if (
-    not CONSUMER_KEY
-    and not CONSUMER_SECRET
-    and not ACCESS_TOKEN
-    and not ACCESS_TOKEN_SECRET
-):
-    raise ValueError(
-        "Consumer and Access keys and secrets must be set as environment variables."
-    )
-
-auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-
-API = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 path = os.path.join(os.path.expanduser("~"), ".twitfilt")
 if not os.path.exists(path):
     os.makedirs(path)
 
-requst_lock = os.path.join(path, "request.lock")
 tags_lock = os.path.join(path, "tags.lock")
 stopwords = stopwords.words("english")
 stopwords.extend(Path("toot/stopwords.txt").read_text().split("\n"))
 
 
-@st.cache(allow_output_mutation=True)
-def get_cursor():
-    return tweepy.Cursor(API.favorites, tweet_mode="extended")
-
-
-@st.cache(show_spinner=True, hash_funcs={tweepy.Cursor: id})
-def load_tweets(cursor, time):
+def load_tweets():
     """
     Load tweets from twitter using Tweepy API.
     """
-    return list(cursor.items())
 
+    df = DataFrame.from_es(url="http://dev.lan:9200", index="tweet-index", compat=7)
 
+    return df.limit(10_000).to_pandas()
+
+@st.cache(show_spinner=True)
 def filter_tweets(df: pd.DataFrame, word: str):
     """
     Filter tweets based on search term provided in search bar.
@@ -226,30 +200,12 @@ def main():
 
     tags = []
     options = None
-    get_lockfile_time = lambda: os.stat(requst_lock).st_mtime
 
-    # This block uses a time lock to limit the requests when loading/ searching tweets
-    #    1. If this is first time use, write the current time to the lock file and load the tweets
-    #    2. Upon further use, if the time in lock file and the current time is greater than 15min (editable) then get the tweets with the current time
-    #    3. If it is < 20min get the tweets using the time from the lock file taking advantage of streamlit caching to not send an api request
-    if not os.path.exists(requst_lock):
-        write_lock_file()
+    data = load_tweets()
 
-    time_float = get_lockfile_time()
-    time = datetime.fromtimestamp(time_float)
-    cur_time = datetime.now()
+    data["Favorited Tweets"] = "<strong><em>@" + data["user"] + "</strong></em> - " + data["tweet"] + " <br><br> " + data["tweet_url"]
 
-    if ((cur_time - time).seconds / 60) > REQUEST_TIME_LIMIT:
-        write_lock_file()
-        time_float = get_lockfile_time()
-
-    cursor = get_cursor()
-    data = load_tweets(cursor, time_float)
-
-    all_favorites = [
-        f"<strong><em>@{fav.user.name}</strong></em> - {fav.full_text} <br><br> https://twitter.com/twitter/statuses/{fav.id}" for fav in data
-    ]
-    full_text = [fav.full_text for fav in data]
+    full_text = data["tweet"].tolist()
 
     st.title(f"My Likes - v{__version__}")
 
@@ -276,21 +232,19 @@ def main():
     # If the user has generated tags, add a hidden column of those tags
     # Otherwise just use the Favorite Tweet column
     if tags:
-        df = pd.DataFrame({"Favorited Tweets": all_favorites, "keywords": tags})
-    else:
-        df = pd.DataFrame({"Favorited Tweets": all_favorites})
+        data["keywords"] = tags
 
     if search:
-        df = filter_tweets(df, search)
+        data = filter_tweets(data, search)
     elif options:
-        df = filter_tags(df, options)
+        data = filter_tags(data, options)
 
-    df["Favorited Tweets"] = (
-        df["Favorited Tweets"].pipe(highlight_urls).pipe(insert_newlines)
+    data["Favorited Tweets"] = (
+        data["Favorited Tweets"].pipe(highlight_urls).pipe(insert_newlines)
     )
 
     st.markdown(
-        df["Favorited Tweets"].to_frame().to_html(escape=False), unsafe_allow_html=True
+        data["Favorited Tweets"].to_frame().to_html(escape=False), unsafe_allow_html=True
     )
 
 

@@ -41,6 +41,7 @@ def load_tweets():
 
     return df.limit(10_000).to_pandas()
 
+
 @st.cache(show_spinner=True)
 def filter_tweets(df: pd.DataFrame, word: str):
     """
@@ -82,15 +83,6 @@ def insert_newlines(data):
     transformed_text = [text.replace("\n", "<br>") for text in data]
 
     return pd.Series(transformed_text)
-
-
-def write_lock_file() -> None:
-    """
-    Writes the the lock file.
-    """
-
-    with open(requst_lock, "w") as f:
-        f.write("")
 
 
 def generate_tags(data):
@@ -203,7 +195,14 @@ def main():
 
     data = load_tweets()
 
-    data["Favorited Tweets"] = "<strong><em>@" + data["user"] + "</strong></em> - " + data["tweet"] + " <br><br> " + data["tweet_url"]
+    data["Favorited Tweets"] = (
+        "<strong><em>@"
+        + data["user"]
+        + "</strong></em> - "
+        + data["tweet"]
+        + " <br><br> "
+        + data["tweet_url"]
+    )
 
     full_text = data["tweet"].tolist()
 
@@ -244,7 +243,8 @@ def main():
     )
 
     st.markdown(
-        data["Favorited Tweets"].to_frame().to_html(escape=False), unsafe_allow_html=True
+        data["Favorited Tweets"].to_frame().to_html(escape=False),
+        unsafe_allow_html=True,
     )
 
 
